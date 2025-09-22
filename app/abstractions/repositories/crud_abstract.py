@@ -6,9 +6,9 @@ F = TypeVar("F")
 S = TypeVar("S")
 
 
-class CRUDRepository(ABC, Generic[T, F]):
+class ReadableRepository(ABC, Generic[T, F]):
     @abstractmethod
-    def create(self, obj: T) -> T:
+    def get_by_id(self, obj_id: int) -> T | None:
         pass
 
     @abstractmethod
@@ -17,20 +17,35 @@ class CRUDRepository(ABC, Generic[T, F]):
     ) -> list[T]:
         pass
 
+
+class WritableRepository(ABC, Generic[T]):
     @abstractmethod
-    def get_by_id(self, obj_id: int) -> T | None:
+    def create(self, obj: T) -> T:
         pass
 
     @abstractmethod
     def delete(self, obj: T):
         pass
 
-    @abstractmethod
-    def count(self, filter: F):
-        pass
 
+class FilterableRepository(ABC, Generic[T, F]):
     @abstractmethod
     def get_filtered(
         self, filter: F, offset: int = 0, limit: int = 100, sort: S | None = None
     ) -> list[T]:
         pass
+
+    @abstractmethod
+    def count(self, filter: F):
+        pass
+
+
+# Interfaz combinada para casos que necesiten todas las operaciones CRUD
+class CRUDRepository(
+    ReadableRepository[T, F],
+    WritableRepository[T],
+    FilterableRepository[T, F],
+    ABC,
+    Generic[T, F],
+):
+    pass
