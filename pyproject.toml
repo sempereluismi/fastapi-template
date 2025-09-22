@@ -1,0 +1,13 @@
+[project]
+name = "fastapi-template"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]>=0.116.2",
+    "loguru>=0.7.3",
+    "pydantic>=2.11.9",
+    "pydantic-settings>=2.10.1",
+    "sqlmodel>=0.0.24",
+]
