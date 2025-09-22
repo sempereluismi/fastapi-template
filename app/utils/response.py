@@ -1,7 +1,6 @@
 from app.models.response import SuccessResponse, Status, Pagination, ErrorResponse
 from fastapi.responses import JSONResponse
 from app.exceptions.responses import PageNotFoundException
-from loguru import logger
 
 
 class ResponseBuilder:
@@ -21,7 +20,6 @@ class ResponseBuilder:
     def paginated(
         data, page: int, size: int, total: int, message="OK", status_code=200
     ):
-        logger.info(f"{page}, {size}, {total}")
         pages = (total + size - 1) // size
         if page > pages and total > 0:
             raise PageNotFoundException(page=page)
