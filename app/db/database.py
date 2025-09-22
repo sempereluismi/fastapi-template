@@ -4,7 +4,7 @@ from sqlmodel import create_engine, SQLModel, Session
 
 class Database:
     def __init__(self, url: str):
-        self.engine = create_engine(url, connect_args={"check_same_thread": False})
+        self.engine = create_engine(url)
 
     def create_db_and_tables(self):
         SQLModel.metadata.create_all(self.engine)
