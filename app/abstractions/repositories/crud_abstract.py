@@ -3,6 +3,7 @@ from typing import Generic, TypeVar
 
 T = TypeVar("T")
 F = TypeVar("F")
+S = TypeVar("S")
 
 
 class CRUDRepository(ABC, Generic[T, F]):
@@ -11,7 +12,9 @@ class CRUDRepository(ABC, Generic[T, F]):
         pass
 
     @abstractmethod
-    def get_all(self, offset: int = 0, limit: int = 100) -> list[T]:
+    def get_all(
+        self, offset: int = 0, limit: int = 100, sort: S | None = None
+    ) -> list[T]:
         pass
 
     @abstractmethod
@@ -27,5 +30,7 @@ class CRUDRepository(ABC, Generic[T, F]):
         pass
 
     @abstractmethod
-    def get_filtered(self, filter: F, offset: int = 0, limit: int = 100) -> list[T]:
+    def get_filtered(
+        self, filter: F, offset: int = 0, limit: int = 100, sort: S | None = None
+    ) -> list[T]:
         pass
