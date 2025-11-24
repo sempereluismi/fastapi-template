@@ -1,11 +1,5 @@
 from fastapi import APIRouter, Query, Depends, status
-from app.models.orm.hero import (
-    Hero,
-    HeroFilter,
-    HeroSort,
-    HeroPut,
-    HeroPatch,
-)
+from app.models.orm.hero import HeroFilter, HeroSort, HeroPut, HeroPatch, HeroCreate
 from app.services.hero_service import get_hero_service, HeroService
 from app.utils.response import ResponseBuilder
 
@@ -13,7 +7,7 @@ test_router = APIRouter(prefix="/test", tags=["test"])
 
 
 @test_router.post("/heroes", status_code=status.HTTP_201_CREATED)
-def create_hero(hero: Hero, service: HeroService = Depends(get_hero_service)):
+def create_hero(hero: HeroCreate, service: HeroService = Depends(get_hero_service)):
     result = service.create_hero(hero)
     return ResponseBuilder.success(data=result, message="Hero created", status_code=201)
 
