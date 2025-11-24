@@ -1,5 +1,5 @@
-from datetime import datetime, timezone
 from sqlmodel import SQLModel, Field
+from datetime import datetime, timezone
 
 
 class BaseSQLModel(SQLModel):
@@ -12,13 +12,16 @@ class BaseSQLModel(SQLModel):
         default_factory=lambda: datetime.now(timezone.utc), nullable=False
     )
 
-    def __setattr__(self, name, value):
-        """Intercepta los cambios en los atributos para actualizar updated_at."""
-        if name != "updated_at":
-            super().__setattr__(name, value)
-            self.updated_at = datetime.now(timezone.utc)
-        else:
-            super().__setattr__(name, value)
+    def __setattr__(self, name: str, value):
+        if (
+            name != "updated_at"
+            and name != "created_at"
+            and hasattr(self, "_sa_instance_state")
+            and self._sa_instance_state is not None
+        ):
+            super().__setattr__("updated_at", datetime.now(timezone.utc))
+
+        super().__setattr__(name, value)
 
     def model_dump(self, **kwargs):
         """Convierte los campos datetime a cadenas ISO 8601."""

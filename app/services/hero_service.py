@@ -2,7 +2,7 @@ from fastapi import Depends
 from sqlmodel import Session
 from app.repositories.hero_repository import HeroRepository
 from app.db.database import db
-from app.models.orm.hero import Hero, HeroFilter, HeroSort
+from app.models.orm.hero import Hero, HeroCreate, HeroFilter, HeroSort
 from app.abstractions.repositories.crud_abstract import CRUDRepository
 from app.exceptions.hero import HeroNotFoundException
 from loguru import logger
@@ -12,7 +12,9 @@ class HeroService:
     def __init__(self, repository: CRUDRepository[Hero, HeroFilter]):
         self.repository = repository
 
-    def create_hero(self, hero: Hero) -> Hero:
+    def create_hero(self, hero_data: HeroCreate) -> Hero:
+        hero = Hero(**hero_data.model_dump())
+        created_hero = self.repository.create(hero)
         if hero.age and hero.age < 0:
             raise ValueError("Hero age cannot be negative")
 

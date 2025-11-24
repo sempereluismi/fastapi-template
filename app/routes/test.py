@@ -1,13 +1,5 @@
 from fastapi import APIRouter, Query, Depends, status
-from app.models.orm.hero import (
-    Hero,
-    HeroFilter,
-    HeroSort,
-    HeroSortField,
-    HeroPut,
-    HeroPatch,
-)
-from app.enums.sort import SortDirection
+from app.models.orm.hero import HeroFilter, HeroSort, HeroPut, HeroPatch, HeroCreate
 from app.services.hero_service import get_hero_service, HeroService
 from app.utils.response import ResponseBuilder
 
@@ -15,7 +7,7 @@ test_router = APIRouter(prefix="/test", tags=["test"])
 
 
 @test_router.post("/heroes", status_code=status.HTTP_201_CREATED)
-def create_hero(hero: Hero, service: HeroService = Depends(get_hero_service)):
+def create_hero(hero: HeroCreate, service: HeroService = Depends(get_hero_service)):
     result = service.create_hero(hero)
     return ResponseBuilder.success(data=result, message="Hero created", status_code=201)
 
@@ -25,22 +17,24 @@ def read_heroes(
     service: HeroService = Depends(get_hero_service),
     page: int = Query(1, ge=1),
     size: int = Query(10, ge=1, le=100),
-    name: str = Query(""),
-    age: int = Query(None),
-    sort_field: HeroSortField = Query(
-        HeroSortField.ID, description="Campo por el cual ordenar"
+    filter: str = Query(
+        None,
+        description="Filtros: 'campo:operador:valor,campo2:operador:valor'. Ej: 'name:like:Spider,age:gt:18'",
     ),
-    sort_direction: SortDirection = Query(
-        SortDirection.ASC, description="Dirección del ordenamiento"
+    sort: str = Query(
+        None,
+        description="Ordenamiento: 'campo:direccion,campo2:direccion'. Ej: 'age:desc,name:asc'",
     ),
 ):
     offset, limit = ResponseBuilder.get_pagination_params(page, size)
-    filter = HeroFilter(name=name, age=age)
-    sort = HeroSort(field=sort_field, direction=sort_direction)
+    filter_model = HeroFilter.from_string(filter)
+    sort_model = HeroSort.from_string(sort)
+
     result = service.get_heroes_filtered(
-        filter=filter, offset=offset, limit=limit, sort=sort
+        filter=filter_model, offset=offset, limit=limit, sort=sort_model
     )
-    total = service.count(filter)
+    total = service.count(filter_model)
+
     return ResponseBuilder.paginated(
         data=result, page=page, size=size, total=total, message="Heroes list"
     )
