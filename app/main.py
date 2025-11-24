@@ -29,3 +29,8 @@ app.include_router(test_router)
 @app.get("/")
 async def root():
     return {"app_name": config.APP_NAME, "status": "OK"}
+
+
+@app.get("/health")
+async def health():
+    return "OK"
