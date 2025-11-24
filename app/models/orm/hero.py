@@ -1,21 +1,20 @@
 from sqlmodel import Field
 from app.models.orm.base import BaseSQLModel
 from app.models.mixins.sortable_mixin import SortableMixin
+from app.models.mixins.filterable_mixin import FilterableMixin
 from pydantic import BaseModel
-from typing import Optional
 
 
-class Hero(BaseSQLModel, SortableMixin, table=True):
+class Hero(BaseSQLModel, SortableMixin, FilterableMixin, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str = Field(index=True)
     age: int | None = Field(default=None, index=True)
     secret_name: str
 
 
-class HeroFilter(BaseModel):
-    name: Optional[str] = None
-    age: Optional[int] = None
-
+HeroFilterField, HeroFilter = Hero.create_filter_classes(
+    exclude_fields={"created_at", "updated_at"}
+)
 
 HeroSortField, HeroSort = Hero.create_sort_classes()
 

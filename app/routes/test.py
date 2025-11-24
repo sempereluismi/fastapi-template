@@ -17,15 +17,17 @@ def read_heroes(
     service: HeroService = Depends(get_hero_service),
     page: int = Query(1, ge=1),
     size: int = Query(10, ge=1, le=100),
-    name: str = Query(""),
-    age: int = Query(None),
+    filter: str = Query(
+        None,
+        description="Filtros: 'campo:operador:valor,campo2:operador:valor'. Ej: 'name:like:Spider,age:gt:18'",
+    ),
     sort: str = Query(
         None,
         description="Ordenamiento: 'campo:direccion,campo2:direccion'. Ej: 'age:desc,name:asc'",
     ),
 ):
     offset, limit = ResponseBuilder.get_pagination_params(page, size)
-    filter_model = HeroFilter(name=name, age=age)
+    filter_model = HeroFilter.from_string(filter)
     sort_model = HeroSort.from_string(sort)
 
     result = service.get_heroes_filtered(

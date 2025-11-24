@@ -1,7 +1,9 @@
 from typing import get_type_hints, Type, Any, cast
 from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from app.enums.sort import SortDirection
+from app.utils.sorting.sort_parser import SortParser
+from app.utils.sorting.sort_validator import SortValidator
 
 
 class SortableMixin:
@@ -40,34 +42,42 @@ class SortableMixin:
         SortFieldEnumType = cast(Type[Enum], SortFieldEnum)
 
         class DynamicSort(BaseModel):
-            fields: list[tuple[Any, SortDirection]] = [
-                (list(SortFieldEnumType)[0], SortDirection.ASC)
-            ]
+            """
+            Sistema de ordenamiento dinámico.
+
+            Formato de sorts: lista de tuplas (campo, dirección)
+            Ejemplo: [(SortField.NAME, SortDirection.ASC),
+                      (SortField.AGE, SortDirection.DESC)]
+            """
+
+            sorts: list[tuple[Any, SortDirection]] = []
+
+            @field_validator("sorts")
+            @classmethod
+            def validate_sorts(cls, v):
+                """Valida que los ordenamientos tengan el formato correcto"""
+                SortValidator.validate_sort_list(v)
+                return v
 
             @classmethod
             def from_string(cls, sort_str: str | None = None) -> "DynamicSort":
-                if not sort_str:
-                    return cls()
+                """
+                Convierte un string a un objeto Sort.
 
-                sort_fields = []
-                for part in sort_str.split(","):
-                    part = part.strip()
-                    if ":" in part:
-                        field_str, direction_str = part.split(":", 1)
-                        try:
-                            field = SortFieldEnumType(field_str.strip())
-                            direction = SortDirection(direction_str.strip().lower())
-                            sort_fields.append((field, direction))
-                        except ValueError:
-                            continue
-                    else:
-                        try:
-                            field = SortFieldEnumType(part)
-                            sort_fields.append((field, SortDirection.ASC))
-                        except ValueError:
-                            continue
+                Formato: "campo:direccion,campo2:direccion2"
 
-                return cls(fields=sort_fields) if sort_fields else cls()
+                Ejemplos:
+                - "name:asc" -> ORDER BY name ASC
+                - "age:desc" -> ORDER BY age DESC
+                - "name:asc,age:desc" -> ORDER BY name ASC, age DESC
+                - "name" -> ORDER BY name ASC (dirección por defecto)
+
+                Direcciones disponibles:
+                - asc: ascendente (A->Z, 0->9)
+                - desc: descendente (Z->A, 9->0)
+                """
+                sorts = SortParser.parse(sort_str, SortFieldEnumType)
+                return cls(sorts=sorts)
 
         DynamicSort.__name__ = f"{cls.__name__}Sort"
         DynamicSort.__qualname__ = f"{cls.__name__}Sort"
