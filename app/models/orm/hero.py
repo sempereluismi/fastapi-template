@@ -36,8 +36,38 @@ class HeroSortField(str, Enum):
 
 
 class HeroSort(BaseModel):
-    field: HeroSortField = HeroSortField.ID
-    direction: SortDirection = SortDirection.ASC
+    fields: list[tuple[HeroSortField, SortDirection]] = [
+        (HeroSortField.ID, SortDirection.ASC)
+    ]
+
+    @classmethod
+    def from_string(cls, sort_str: str | None = None):
+        """
+        Parse una cadena de ordenamiento como 'age:desc,name:asc'
+        Si no se proporciona, usa el ordenamiento por defecto
+        """
+        if not sort_str:
+            return cls()
+
+        sort_fields = []
+        for part in sort_str.split(","):
+            part = part.strip()
+            if ":" in part:
+                field_str, direction_str = part.split(":", 1)
+                try:
+                    field = HeroSortField(field_str.strip())
+                    direction = SortDirection(direction_str.strip().lower())
+                    sort_fields.append((field, direction))
+                except ValueError:
+                    continue
+            else:
+                try:
+                    field = HeroSortField(part)
+                    sort_fields.append((field, SortDirection.ASC))
+                except ValueError:
+                    continue
+
+        return cls(fields=sort_fields) if sort_fields else cls()
 
 
 class HeroPut(BaseModel):

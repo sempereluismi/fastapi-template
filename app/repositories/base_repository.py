@@ -1,6 +1,8 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from sqlmodel import Session, select, func
 from typing import TypeVar, Generic, Type
+from app.abstractions.filters.filter_strategy import IFilterStrategy
+from app.abstractions.filters.sort_strategy import ISortStrategy
 
 T = TypeVar("T")
 FilterType = TypeVar("FilterType")
@@ -8,9 +10,17 @@ SortType = TypeVar("SortType")
 
 
 class BaseRepository(Generic[T, FilterType, SortType], ABC):
-    def __init__(self, session: Session, model_class: Type[T]):
+    def __init__(
+        self,
+        session: Session,
+        model_class: Type[T],
+        filter_strategy: IFilterStrategy[T, FilterType],
+        sort_strategy: ISortStrategy[T, SortType],
+    ):
         self.session = session
         self.model_class = model_class
+        self.filter_strategy = filter_strategy
+        self.sort_strategy = sort_strategy
 
     def create(self, entity: T) -> T:
         self.session.add(entity)
@@ -25,7 +35,7 @@ class BaseRepository(Generic[T, FilterType, SortType], ABC):
         self, offset: int = 0, limit: int = 100, sort: SortType | None = None
     ) -> list[T]:
         query = select(self.model_class)
-        query = self._apply_sorting(query, sort)
+        query = self.sort_strategy.apply(query, sort)
         return self.session.exec(query.offset(offset).limit(limit)).all()
 
     def get_filtered(
@@ -36,15 +46,15 @@ class BaseRepository(Generic[T, FilterType, SortType], ABC):
         sort: SortType | None = None,
     ) -> list[T]:
         query = select(self.model_class)
-        query = self._apply_filters(query, filter)
-        query = self._apply_sorting(query, sort)
+        query = self.filter_strategy.apply(query, filter)
+        query = self.sort_strategy.apply(query, sort)
         return self.session.exec(query.offset(offset).limit(limit)).all()
 
     def count(self, filter: FilterType | None = None) -> int:
         """Cuenta el total de elementos después del filtrado"""
         query = select(func.count(self.model_class.id))
         if filter:
-            query = self._apply_filters(query, filter)
+            query = self.filter_strategy.apply(query, filter)
         return self.session.exec(query).one()
 
     def delete(self, entity: T):
@@ -74,11 +84,3 @@ class BaseRepository(Generic[T, FilterType, SortType], ABC):
         self.session.commit()
         self.session.refresh(existing_entity)
         return existing_entity
-
-    @abstractmethod
-    def _apply_filters(self, query: select, filter: FilterType | None = None) -> select:
-        pass
-
-    @abstractmethod
-    def _apply_sorting(self, query: select, sort: SortType | None = None) -> select:
-        pass
