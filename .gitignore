@@ -192,6 +192,10 @@ pyrightconfig.json
 .history
 .ionide
 
+### Alembic ###
+# Version files
+migrations/__pycache__/
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,python
 
 *.db

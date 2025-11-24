@@ -1,11 +1,12 @@
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field
+from app.models.orm.base import BaseSQLModel
 from pydantic import BaseModel
 from typing import Optional
 from enum import Enum
 from app.enums.sort import SortDirection
 
 
-class Hero(SQLModel, table=True):
+class Hero(BaseSQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str = Field(index=True)
     age: int | None = Field(default=None, index=True)
@@ -37,3 +38,15 @@ class HeroSortField(str, Enum):
 class HeroSort(BaseModel):
     field: HeroSortField = HeroSortField.ID
     direction: SortDirection = SortDirection.ASC
+
+
+class HeroPut(BaseModel):
+    name: str
+    age: int
+    secret_name: str
+
+
+class HeroPatch(BaseModel):
+    name: str | None = None
+    age: int | None = None
+    secret_name: str | None = None

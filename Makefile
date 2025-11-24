@@ -18,3 +18,12 @@ docker-shell:
 
 docker-db-shell:
 	docker compose exec db psql -U fastapi_user -d fastapi_db
+
+# Generar una migración con un mensaje personalizado
+migrate:
+	@read -p "Enter migration message: " msg; \
+	uv run alembic revision --autogenerate -m "$$msg"
+
+# Ejecutar las migraciones pendientes
+upgrade:
+	uv run alembic upgrade head

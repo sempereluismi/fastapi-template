@@ -1,12 +1,19 @@
 from app.models.response import SuccessResponse, Status, Pagination, ErrorResponse
 from fastapi.responses import JSONResponse
 from app.exceptions.responses import PageNotFoundException
+from datetime import datetime
 
 
 class ResponseBuilder:
     @staticmethod
     def success(data=None, message="OK", status_code=200):
         status = Status(code=status_code, message=message)
+
+        if hasattr(data, "model_dump"):
+            data = data.model_dump()
+
+        data = ResponseBuilder._serialize_datetime(data)
+
         envelope = SuccessResponse(status=status, data=data)
         return JSONResponse(status_code=status_code, content=envelope.model_dump())
 
@@ -32,6 +39,9 @@ class ResponseBuilder:
             has_prev=page > 1,
         )
         status = Status(code=status_code, message=message)
+
+        data = ResponseBuilder._serialize_datetime(data)
+
         envelope = SuccessResponse(
             status=status, data={"items": data, "pagination": pagination.model_dump()}
         )
@@ -46,3 +56,19 @@ class ResponseBuilder:
         offset = (page - 1) * page_size
         limit = page_size
         return offset, limit
+
+    @staticmethod
+    def _serialize_datetime(data):
+        """Convierte objetos datetime a cadenas en estructuras de datos."""
+        if isinstance(data, dict):
+            return {
+                key: ResponseBuilder._serialize_datetime(value)
+                for key, value in data.items()
+            }
+        elif isinstance(data, list):
+            return [ResponseBuilder._serialize_datetime(item) for item in data]
+        elif isinstance(data, datetime):
+            return data.isoformat()
+        elif hasattr(data, "model_dump"):
+            return data.model_dump()
+        return data

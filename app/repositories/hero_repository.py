@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from app.models.hero import Hero, HeroFilter, HeroSort
+from app.models.orm.hero import Hero, HeroFilter, HeroSort
 from app.repositories.base_repository import BaseRepository
 from app.enums.sort import SortDirection
 

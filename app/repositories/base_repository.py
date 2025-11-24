@@ -51,10 +51,32 @@ class BaseRepository(Generic[T, FilterType, SortType], ABC):
         self.session.delete(entity)
         self.session.commit()
 
+    def update_put(self, entity_id: int, updated_entity: T) -> T | None:
+        """Reemplaza completamente una entidad existente."""
+        existing_entity = self.get_by_id(entity_id)
+        if not existing_entity:
+            return None
+        for key, value in updated_entity.dict().items():
+            setattr(existing_entity, key, value)
+        self.session.add(existing_entity)
+        self.session.commit()
+        self.session.refresh(existing_entity)
+        return existing_entity
+
+    def update_patch(self, entity_id: int, partial_update: dict) -> T | None:
+        """Actualiza parcialmente una entidad existente."""
+        existing_entity = self.get_by_id(entity_id)
+        if not existing_entity:
+            return None
+        for key, value in partial_update.items():
+            setattr(existing_entity, key, value)
+        self.session.add(existing_entity)
+        self.session.commit()
+        self.session.refresh(existing_entity)
+        return existing_entity
+
     @abstractmethod
-    def _apply_filters(
-        self, query: select, filter: FilterType | None = None
-    ) -> select:
+    def _apply_filters(self, query: select, filter: FilterType | None = None) -> select:
         pass
 
     @abstractmethod

@@ -1,5 +1,12 @@
 from fastapi import APIRouter, Query, Depends, status
-from app.models.hero import Hero, HeroFilter, HeroSort, HeroSortField
+from app.models.orm.hero import (
+    Hero,
+    HeroFilter,
+    HeroSort,
+    HeroSortField,
+    HeroPut,
+    HeroPatch,
+)
 from app.enums.sort import SortDirection
 from app.services.hero_service import get_hero_service, HeroService
 from app.utils.response import ResponseBuilder
@@ -50,3 +57,23 @@ def delete_hero(hero_id: int, service: HeroService = Depends(get_hero_service)):
     hero = service.get_hero_by_id(hero_id=hero_id)
     service.delete_hero(hero=hero)
     return ResponseBuilder.success(message="Hero deleted")
+
+
+@test_router.put("/heroes/{hero_id}")
+def update_hero_put(
+    hero_id: int,
+    updated_hero: HeroPut,
+    service: HeroService = Depends(get_hero_service),
+):
+    result = service.update_hero_put(hero_id=hero_id, updated_hero=updated_hero)
+    return ResponseBuilder.success(data=result, message="Hero updated (PUT)")
+
+
+@test_router.patch("/heroes/{hero_id}")
+def update_hero_patch(
+    hero_id: int,
+    partial_update: HeroPatch,
+    service: HeroService = Depends(get_hero_service),
+):
+    result = service.update_hero_patch(hero_id=hero_id, partial_update=partial_update)
+    return ResponseBuilder.success(data=result, message="Hero updated (PATCH)")

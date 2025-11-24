@@ -2,7 +2,7 @@ from fastapi import Depends
 from sqlmodel import Session
 from app.repositories.hero_repository import HeroRepository
 from app.db.database import db
-from app.models.hero import Hero, HeroFilter, HeroSort
+from app.models.orm.hero import Hero, HeroFilter, HeroSort
 from app.abstractions.repositories.crud_abstract import CRUDRepository
 from app.exceptions.hero import HeroNotFoundException
 from loguru import logger
@@ -70,6 +70,24 @@ class HeroService:
 
     def count(self, filter: HeroFilter | None = None) -> int:
         return self.repository.count(filter=filter)
+
+    def update_hero_put(self, hero_id: int, updated_hero: Hero) -> Hero:
+        """Actualiza completamente un héroe existente."""
+        logger.info(f"Updating hero with ID {hero_id} using PUT method")
+        updated_entity = self.repository.update_put(hero_id, updated_hero)
+        if not updated_entity:
+            raise HeroNotFoundException(hero_id)
+        logger.info(f"Hero with ID {hero_id} updated successfully")
+        return updated_entity
+
+    def update_hero_patch(self, hero_id: int, partial_update: dict) -> Hero:
+        """Actualiza parcialmente un héroe existente."""
+        logger.info(f"Updating hero with ID {hero_id} using PATCH method")
+        updated_entity = self.repository.update_patch(hero_id, partial_update)
+        if not updated_entity:
+            raise HeroNotFoundException(hero_id)
+        logger.info(f"Hero with ID {hero_id} updated successfully")
+        return updated_entity
 
 
 def get_hero_service(session: Session = Depends(db.get_session)) -> HeroService:
