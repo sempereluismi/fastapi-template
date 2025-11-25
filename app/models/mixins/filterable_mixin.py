@@ -4,6 +4,8 @@ from pydantic import BaseModel, field_validator
 from app.enums.filter import FilterOperator
 from app.utils.filters.filter_parser import FilterParser
 from app.utils.filters.filter_validator import FilterValidator
+from app.exceptions.filters import InvalidFilterFormatException
+from loguru import logger
 
 
 class FilterableMixin:
@@ -56,9 +58,13 @@ class FilterableMixin:
             @classmethod
             def validate_filters(cls, v):
                 """Valida que los filtros tengan el formato correcto"""
-                for filter_item in v:
-                    FilterValidator.validate_filter_tuple(filter_item)
-                return v
+                try:
+                    for filter_item in v:
+                        FilterValidator.validate_filter_tuple(filter_item)
+                    return v
+                except Exception as e:
+                    logger.error(f"Filter validation error: {str(e)}")
+                    raise InvalidFilterFormatException(str(e))
 
             @classmethod
             def from_string(cls, filter_str: str | None = None) -> "DynamicFilter":
@@ -87,8 +93,17 @@ class FilterableMixin:
                 - is_null: es nulo (IS NULL)
                 - is_not_null: no es nulo (IS NOT NULL)
                 """
-                filters = FilterParser.parse(filter_str, FilterFieldEnumType)
-                return cls(filters=filters)
+                if not filter_str:
+                    return cls(filters=[])
+
+                try:
+                    filters = FilterParser.parse(filter_str, FilterFieldEnumType)
+                    return cls(filters=filters)
+                except Exception as e:
+                    logger.error(
+                        f"Error parsing filter string '{filter_str}': {str(e)}"
+                    )
+                    raise
 
         DynamicFilter.__name__ = f"{cls.__name__}Filter"
         DynamicFilter.__qualname__ = f"{cls.__name__}Filter"
