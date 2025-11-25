@@ -2,6 +2,8 @@ from enum import Enum
 from typing import Type
 from app.enums.filter import FilterOperator
 from app.utils.filters.filter_value_converter import FilterValueConverter
+from loguru import logger
+from app.exceptions.filters import InvalidFilterFormatException
 
 
 class FilterParser:
@@ -51,7 +53,10 @@ class FilterParser:
 
         parts = part.split(":", 2)
         if len(parts) < 2:
-            return None
+            logger.warning(f"Invalid filter format: {part}")
+            raise InvalidFilterFormatException(
+                f"Filter must have format 'field:operator:value'. Got: {part}"
+            )
 
         field_str = parts[0].strip()
         operator_str = parts[1].strip()
@@ -59,10 +64,19 @@ class FilterParser:
 
         try:
             field = field_enum(field_str)
-            operator = FilterOperator(operator_str)
-            value = FilterValueConverter.convert(value_str, operator)
-
-            return (field, operator, value)
         except ValueError:
+            logger.warning(f"Invalid filter field: {field_str}")
+            raise InvalidFilterFormatException(
+                f"Invalid field '{field_str}'. Available fields: {[e.value for e in field_enum]}"
+            )
 
-            return None
+        try:
+            operator = FilterOperator(operator_str)
+        except ValueError:
+            logger.warning(f"Invalid operator: {operator_str}")
+            raise InvalidFilterFormatException(
+                f"Invalid operator '{operator_str}'. Available operators: {[e.value for e in FilterOperator]}"
+            )
+
+        value = FilterValueConverter.convert(value_str, operator)
+        return (field, operator, value)

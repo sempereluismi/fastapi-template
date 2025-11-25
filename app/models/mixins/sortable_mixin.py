@@ -4,6 +4,8 @@ from pydantic import BaseModel, field_validator
 from app.enums.sort import SortDirection
 from app.utils.sorting.sort_parser import SortParser
 from app.utils.sorting.sort_validator import SortValidator
+from app.exceptions.sorting import InvalidSortFormatException
+from loguru import logger
 
 
 class SortableMixin:
@@ -17,7 +19,7 @@ class SortableMixin:
         Genera automáticamente SortField (Enum) y Sort (BaseModel) para el modelo.
 
         Args:
-            exclude_fields: Campos a excluir del ordenamiento (ej: {'created_at', 'updated_at'})
+            exclude_fields: Campos a excluir del ordenamiento
 
         Returns:
             tuple[Type[Enum], Type[BaseModel]]: (SortFieldEnum, SortModel)
@@ -56,8 +58,12 @@ class SortableMixin:
             @classmethod
             def validate_sorts(cls, v):
                 """Valida que los ordenamientos tengan el formato correcto"""
-                SortValidator.validate_sort_list(v)
-                return v
+                try:
+                    SortValidator.validate_sort_list(v)
+                    return v
+                except Exception as e:
+                    logger.error(f"Sort validation error: {str(e)}")
+                    raise InvalidSortFormatException(str(e))
 
             @classmethod
             def from_string(cls, sort_str: str | None = None) -> "DynamicSort":
@@ -76,8 +82,15 @@ class SortableMixin:
                 - asc: ascendente (A->Z, 0->9)
                 - desc: descendente (Z->A, 9->0)
                 """
-                sorts = SortParser.parse(sort_str, SortFieldEnumType)
-                return cls(sorts=sorts)
+                if not sort_str:
+                    return cls(sorts=[])
+
+                try:
+                    sorts = SortParser.parse(sort_str, SortFieldEnumType)
+                    return cls(sorts=sorts)
+                except Exception as e:
+                    logger.error(f"Error parsing sort string '{sort_str}': {str(e)}")
+                    raise
 
         DynamicSort.__name__ = f"{cls.__name__}Sort"
         DynamicSort.__qualname__ = f"{cls.__name__}Sort"
