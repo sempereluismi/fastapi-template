@@ -80,8 +80,9 @@ class BaseRepository(Generic[T, FilterType, SortType], ABC):
             existing_entity = self.get_by_id(entity_id)
             if not existing_entity:
                 return None
-            for key, value in updated_entity.dict().items():
-                setattr(existing_entity, key, value)
+            for key, value in updated_entity.model_dump(mode="python").items():
+                if key not in ["id", "created_at", "updated_at"]:
+                    setattr(existing_entity, key, value)
             self.session.add(existing_entity)
             self.session.commit()
             self.session.refresh(existing_entity)
