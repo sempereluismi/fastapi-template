@@ -1,13 +1,14 @@
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
-from app.core.config import config as app_config
+from app.core.config import get_settings
 from sqlmodel import SQLModel
 from pathlib import Path
 import importlib
 
 # Alembic Config object, que proporciona acceso a los valores del archivo .ini
 config = context.config
+app_config = get_settings()
 
 # Configura los loggers
 if config.config_file_name is not None:
@@ -32,7 +33,7 @@ import_models()
 target_metadata = SQLModel.metadata
 
 # Sobrescribe la URL de la base de datos con la de app_config
-config.set_main_option("sqlalchemy.url", app_config.DATABASE_URL)
+config.set_main_option("sqlalchemy.url", app_config.database_url)
 
 
 def run_migrations_offline() -> None:
