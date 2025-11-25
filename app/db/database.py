@@ -1,5 +1,7 @@
-from app.core.config import config
+from app.core.config import get_settings
 from sqlmodel import create_engine, SQLModel, Session
+
+config = get_settings()
 
 
 class Database:
@@ -14,4 +16,4 @@ class Database:
             yield session
 
 
-db = Database(config.DATABASE_URL)
+db = Database(config.database_url)
