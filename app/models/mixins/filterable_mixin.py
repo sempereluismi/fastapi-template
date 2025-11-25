@@ -77,7 +77,7 @@ class FilterableMixin:
                 - "name:like:Spider" -> name LIKE '%Spider%'
                 - "age:gt:18" -> age > 18
                 - "age:ge:18,age:le:65" -> age >= 18 AND age <= 65
-                - "name:in:Spider,Iron,Thor" -> name IN ('Spider', 'Iron', 'Thor')
+                - "name:in:Spider;Iron;Thor" -> name IN ('Spider', 'Iron', 'Thor')
                 - "age:is_null:" -> age IS NULL
 
                 Operadores disponibles:
@@ -88,8 +88,8 @@ class FilterableMixin:
                 - lt: menor que (<)
                 - le: menor o igual (<=)
                 - like: contiene (LIKE '%valor%')
-                - in: en lista (IN)
-                - not_in: no en lista (NOT IN)
+                - in: en lista (separador: ;)
+                - not_in: no en lista (separador: ;)
                 - is_null: es nulo (IS NULL)
                 - is_not_null: no es nulo (IS NOT NULL)
                 """

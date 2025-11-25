@@ -27,3 +27,9 @@ migrate:
 # Ejecutar las migraciones pendientes
 upgrade:
 	uv run alembic upgrade head
+
+serve-docs:
+	uv run mkdocs serve -a 127.0.0.1:4321
+
+deploy-docs:
+	uv run mkdocs gh-deploy --force -m "Deploy docs: $$(date '+%Y-%m-%d %H:%M:%S')"

@@ -1,0 +1,62 @@
+site_name: FastAPI Template
+site_description: Template de FastAPI con arquitectura limpia
+site_author: Luis Sempere
+site_url: https://github.com/sempereluismi/fastapi-template
+
+theme:
+  name: material
+  language: es
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Cambiar a modo oscuro
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Cambiar a modo claro
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - toc.follow
+
+nav:
+  - Inicio: README.md
+  - Arquitectura: architecture.md
+  - Guía de Desarrollo: development-guide.md
+  - Guía de Uso: usage-guide.md
+  - Ejemplos: examples.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+      toc_depth: 3
+
+
+docs_dir: docs
+
+plugins:
+  - search:
+      lang: es
