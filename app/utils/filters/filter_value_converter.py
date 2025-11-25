@@ -27,13 +27,15 @@ class FilterValueConverter:
 
     @staticmethod
     def _convert_to_list(value_str: str | None) -> list:
-        """Convierte string a lista separada por comas"""
+        """
+        Convierte string a lista separada por punto y coma.
+        """
         if not value_str:
             return []
 
         return [
             FilterValueConverter._convert_scalar(v.strip())
-            for v in value_str.split(",")
+            for v in value_str.split(";")
         ]
 
     @staticmethod

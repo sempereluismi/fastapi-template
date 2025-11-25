@@ -69,5 +69,6 @@ def update_hero_patch(
     partial_update: HeroPatch,
     service: HeroService = Depends(get_hero_service),
 ):
-    result = service.update_hero_patch(hero_id=hero_id, partial_update=partial_update)
+    update_dict = partial_update.model_dump(exclude_unset=True)
+    result = service.update_hero_patch(hero_id=hero_id, partial_update=update_dict)
     return ResponseBuilder.success(data=result, message="Hero updated (PATCH)")
