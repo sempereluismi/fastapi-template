@@ -14,3 +14,9 @@ dependencies = [
     "pytest>=9.0.1",
     "sqlmodel>=0.0.24",
 ]
+
+[dependency-groups]
+dev = [
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.7.0",
+]

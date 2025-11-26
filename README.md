@@ -1,36 +1,24 @@
-# fastapi-template
+# FastAPI Template
 
-## Prioridades de Mejora
+Template de FastAPI con arquitectura limpia, gestión de filtros y ordenación dinámica.
 
-### 1. **Autenticación y Autorización**
+## 📚 Documentación
 
-- Implementar un sistema de autenticación basado en OAuth2 con JWT.
-- Definir roles y permisos para controlar el acceso a las rutas.
+La documentación completa del proyecto está disponible en:
 
-### 2. **Manejo de Errores Global**
+**🌐 [https://sempereluismi.github.io/fastapi-template/](https://sempereluismi.github.io/fastapi-template/)**
 
-- Crear un middleware para capturar errores no controlados.
-- Estandarizar las respuestas de error.
+### Contenido de la documentación
 
-### 3. **Versionado de la API**
+- **Arquitectura**: Descripción de la estructura del proyecto y patrones utilizados
+- **Guía de Desarrollo**: Instrucciones para configurar el entorno de desarrollo
+- **Guía de Uso**: Cómo utilizar las funcionalidades del proyecto
+- **Ejemplos**: Casos de uso prácticos y ejemplos de código
 
-- Agregar prefijos como `/v1` o `/v2` para manejar cambios futuros en la API.
+### Visualizar la documentación localmente
 
-### 4. **Paginación y Ordenación Avanzada**
+```bash
+make serve-docs
+```
 
-- Permitir múltiples campos de ordenación.
-- Agregar soporte para filtros más complejos (e.g., rangos, operadores lógicos).
-
-### 5. **Configuración para Entornos**
-
-- Separar configuraciones por entorno (desarrollo, producción, pruebas).
-- Usar variables como `ENV=development` y cargar configuraciones específicas.
-
-### 6. **Soporte para Relaciones entre Modelos**
-
-- Agregar soporte para relaciones en los modelos SQLModel (e.g., un héroe puede tener misiones).
-
-### 7. **Logging Avanzado**
-
-- Configurar logs por nivel (info, warning, error).
-- Agregar logs para solicitudes entrantes y salientes.
+La documentación estará disponible en `http://127.0.0.1:4321`
