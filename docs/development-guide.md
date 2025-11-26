@@ -18,7 +18,7 @@ Esta guía explica cómo extender la aplicación añadiendo nuevos modelos, serv
 
 Antes de comenzar, asegúrate de tener:
 
-- Python 3.11+
+- Python 3.12+
 - uv instalado
 - Docker y Docker Compose
 - Conocimientos básicos de FastAPI, SQLModel y Pydantic
