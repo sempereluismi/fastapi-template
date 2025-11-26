@@ -10,7 +10,7 @@ class ResponseBuilder:
         status = Status(code=status_code, message=message)
 
         if hasattr(data, "model_dump"):
-            data = data.model_dump()
+            data = data.model_dump(mode="json")
 
         data = ResponseBuilder._serialize_datetime(data)
 
@@ -70,5 +70,5 @@ class ResponseBuilder:
         elif isinstance(data, datetime):
             return data.isoformat()
         elif hasattr(data, "model_dump"):
-            return data.model_dump()
+            return data.model_dump(mode="json")
         return data

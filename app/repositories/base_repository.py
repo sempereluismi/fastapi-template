@@ -5,6 +5,7 @@ from app.abstractions.filters.filter_strategy import IFilterStrategy
 from app.abstractions.filters.sort_strategy import ISortStrategy
 from loguru import logger
 from sqlalchemy.exc import SQLAlchemyError
+from uuid import UUID
 
 T = TypeVar("T")
 FilterType = TypeVar("FilterType")
@@ -35,7 +36,7 @@ class BaseRepository(Generic[T, FilterType, SortType], ABC):
             logger.error(f"Error creating {self.model_class.__name__}: {str(e)}")
             raise
 
-    def get_by_id(self, entity_id: int) -> T | None:
+    def get_by_id(self, entity_id: UUID) -> T | None:
         return self.session.get(self.model_class, entity_id)
 
     def get_all(
@@ -75,7 +76,7 @@ class BaseRepository(Generic[T, FilterType, SortType], ABC):
         self.session.delete(entity)
         self.session.commit()
 
-    def update_put(self, entity_id: int, updated_entity: T) -> T | None:
+    def update_put(self, entity_id: UUID, updated_entity: T) -> T | None:
         try:
             existing_entity = self.get_by_id(entity_id)
             if not existing_entity:
@@ -92,7 +93,7 @@ class BaseRepository(Generic[T, FilterType, SortType], ABC):
             logger.error(f"Error updating {self.model_class.__name__}: {str(e)}")
             raise
 
-    def update_patch(self, entity_id: int, partial_update: dict) -> T | None:
+    def update_patch(self, entity_id: UUID, partial_update: dict) -> T | None:
         """Actualiza parcialmente una entidad existente."""
         existing_entity = self.get_by_id(entity_id)
         if not existing_entity:

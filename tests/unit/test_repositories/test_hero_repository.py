@@ -1,4 +1,5 @@
 from app.models.orm.hero import Hero
+from uuid import uuid4
 
 
 class TestHeroRepositoryCreate:
@@ -45,7 +46,8 @@ class TestHeroRepositoryGetById:
     def test_get_by_id_non_existing_hero(self, hero_repository):
         """Debe retornar None si el héroe no existe"""
         # Act
-        result = hero_repository.get_by_id(99999)
+        non_existent_uuid = uuid4()
+        result = hero_repository.get_by_id(non_existent_uuid)
 
         # Assert
         assert result is None
@@ -228,9 +230,10 @@ class TestHeroRepositoryUpdatePut:
         """Debe retornar None si el héroe no existe"""
         # Arrange
         updated_hero = Hero(name="Test", age=25, secret_name="Test")
+        non_existent_uuid = uuid4()
 
         # Act
-        result = hero_repository.update_put(99999, updated_hero)
+        result = hero_repository.update_put(non_existent_uuid, updated_hero)
 
         # Assert
         assert result is None
@@ -289,9 +292,10 @@ class TestHeroRepositoryUpdatePatch:
         """Debe retornar None si el héroe no existe"""
         # Arrange
         partial_update = {"name": "Test"}
+        non_existent_uuid = uuid4()
 
         # Act
-        result = hero_repository.update_patch(99999, partial_update)
+        result = hero_repository.update_patch(non_existent_uuid, partial_update)
 
         # Assert
         assert result is None

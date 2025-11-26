@@ -1,4 +1,5 @@
 from fastapi import status
+from uuid import uuid4
 
 
 class TestHeroCreateEndpoint:
@@ -119,13 +120,14 @@ class TestHeroDetailEndpoint:
         # Assert
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        assert data["data"]["id"] == hero_in_db.id
+        assert data["data"]["id"] == str(hero_in_db.id)
         assert data["data"]["name"] == hero_in_db.name
 
     def test_get_hero_not_found(self, client):
         """Debe retornar 404 si el héroe no existe"""
         # Act
-        response = client.get("/test/heroes/999")
+        non_existent_uuid = uuid4()
+        response = client.get(f"/test/heroes/{non_existent_uuid}")
 
         # Assert
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -156,9 +158,10 @@ class TestHeroUpdateEndpoint:
         """Debe retornar error si el héroe no existe"""
         # Arrange
         updated_data = {"name": "Test", "age": 25, "secret_name": "Test"}
+        non_existent_uuid = uuid4()
 
         # Act
-        response = client.put("/test/heroes/999", json=updated_data)
+        response = client.put(f"/test/heroes/{non_existent_uuid}", json=updated_data)
 
         # Assert
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -211,9 +214,10 @@ class TestHeroPatchEndpoint:
         """Debe retornar error si el héroe no existe"""
         # Arrange
         partial_data = {"name": "Test"}
+        non_existent_uuid = uuid4()
 
         # Act
-        response = client.patch("/test/heroes/999", json=partial_data)
+        response = client.patch(f"/test/heroes/{non_existent_uuid}", json=partial_data)
 
         # Assert
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -237,7 +241,8 @@ class TestHeroDeleteEndpoint:
     def test_delete_hero_not_found(self, client):
         """Debe retornar error si el héroe no existe"""
         # Act
-        response = client.delete("/test/heroes/999")
+        non_existent_uuid = uuid4()
+        response = client.delete(f"/test/heroes/{non_existent_uuid}")
 
         # Assert
         assert response.status_code == status.HTTP_404_NOT_FOUND

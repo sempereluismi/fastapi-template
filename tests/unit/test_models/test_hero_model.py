@@ -1,5 +1,6 @@
 import pytest
 from app.models.orm.hero import Hero, HeroCreate, HeroPut, HeroPatch
+from uuid import uuid4
 
 
 class TestHeroModel:
@@ -8,10 +9,11 @@ class TestHeroModel:
     def test_hero_creation_with_all_fields(self):
         """Debe crear un héroe con todos los campos"""
         # Arrange & Act
-        hero = Hero(id=1, name="Spider-Man", age=25, secret_name="Peter Parker")
+        test_uuid = uuid4()
+        hero = Hero(id=test_uuid, name="Spider-Man", age=25, secret_name="Peter Parker")
 
         # Assert
-        assert hero.id == 1
+        assert hero.id == test_uuid
         assert hero.name == "Spider-Man"
         assert hero.age == 25
         assert hero.secret_name == "Peter Parker"
@@ -25,7 +27,7 @@ class TestHeroModel:
         assert hero.name == "Batman"
         assert hero.secret_name == "Bruce Wayne"
         assert hero.age is None
-        assert hero.id is None
+        assert hero.id is not None  # UUID se genera automáticamente
 
     def test_hero_has_timestamps(self):
         """Debe tener timestamps automáticos"""
@@ -39,7 +41,8 @@ class TestHeroModel:
     def test_hero_model_dump(self):
         """Debe serializar correctamente a dict"""
         # Arrange
-        hero = Hero(id=1, name="Iron Man", age=45, secret_name="Tony Stark")
+        test_uuid = uuid4()
+        hero = Hero(id=test_uuid, name="Iron Man", age=45, secret_name="Tony Stark")
 
         # Act
         data = hero.model_dump()

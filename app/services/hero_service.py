@@ -6,6 +6,7 @@ from app.models.orm.hero import Hero, HeroCreate, HeroFilter, HeroSort
 from app.abstractions.repositories.crud_abstract import CRUDRepository
 from app.exceptions.hero import HeroNotFoundException
 from loguru import logger
+from uuid import UUID
 
 
 class HeroService:
@@ -26,7 +27,7 @@ class HeroService:
 
         return created_hero
 
-    def activate_hero(self, hero_id: int) -> Hero:
+    def activate_hero(self, hero_id: UUID) -> Hero:
         """Ejemplo de lógica de negocio real"""
         hero = self.get_hero_by_id(hero_id)
 
@@ -37,13 +38,13 @@ class HeroService:
 
         return hero
 
-    def get_hero_by_id(self, hero_id: int) -> Hero:
+    def get_hero_by_id(self, hero_id: UUID) -> Hero:
         hero = self.repository.get_by_id(hero_id)
         if not hero:
             raise HeroNotFoundException(hero_id)
         return hero
 
-    def retire_hero(self, hero_id: int) -> None:
+    def retire_hero(self, hero_id: UUID) -> None:
         """Ejemplo de proceso de negocio complejo"""
         hero = self.get_hero_by_id(hero_id)
 
@@ -73,7 +74,7 @@ class HeroService:
     def count(self, filter: HeroFilter | None = None) -> int:
         return self.repository.count(filter=filter)
 
-    def update_hero_put(self, hero_id: int, updated_hero: Hero) -> Hero:
+    def update_hero_put(self, hero_id: UUID, updated_hero: Hero) -> Hero:
         """Actualiza completamente un héroe existente."""
         logger.info(f"Updating hero with ID {hero_id} using PUT method")
         updated_entity = self.repository.update_put(hero_id, updated_hero)
@@ -82,7 +83,7 @@ class HeroService:
         logger.info(f"Hero with ID {hero_id} updated successfully")
         return updated_entity
 
-    def update_hero_patch(self, hero_id: int, partial_update: dict) -> Hero:
+    def update_hero_patch(self, hero_id: UUID, partial_update: dict) -> Hero:
         """Actualiza parcialmente un héroe existente."""
         logger.info(f"Updating hero with ID {hero_id} using PATCH method")
         updated_entity = self.repository.update_patch(hero_id, partial_update)

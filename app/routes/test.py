@@ -2,6 +2,7 @@ from fastapi import APIRouter, Query, Depends, status
 from app.models.orm.hero import HeroFilter, HeroSort, HeroPut, HeroPatch, HeroCreate
 from app.services.hero_service import get_hero_service, HeroService
 from app.utils.response import ResponseBuilder
+from uuid import UUID
 
 test_router = APIRouter(prefix="/test", tags=["test"])
 
@@ -41,13 +42,13 @@ def read_heroes(
 
 
 @test_router.get("/heroes/{hero_id}")
-def read_hero(hero_id: int, service: HeroService = Depends(get_hero_service)):
+def read_hero(hero_id: UUID, service: HeroService = Depends(get_hero_service)):
     result = service.get_hero_by_id(hero_id=hero_id)
     return ResponseBuilder.success(data=result, message="Hero detail")
 
 
 @test_router.delete("/heroes/{hero_id}")
-def delete_hero(hero_id: int, service: HeroService = Depends(get_hero_service)):
+def delete_hero(hero_id: UUID, service: HeroService = Depends(get_hero_service)):
     hero = service.get_hero_by_id(hero_id=hero_id)
     service.delete_hero(hero=hero)
     return ResponseBuilder.success(message="Hero deleted")
@@ -55,7 +56,7 @@ def delete_hero(hero_id: int, service: HeroService = Depends(get_hero_service)):
 
 @test_router.put("/heroes/{hero_id}")
 def update_hero_put(
-    hero_id: int,
+    hero_id: UUID,
     updated_hero: HeroPut,
     service: HeroService = Depends(get_hero_service),
 ):
@@ -65,7 +66,7 @@ def update_hero_put(
 
 @test_router.patch("/heroes/{hero_id}")
 def update_hero_patch(
-    hero_id: int,
+    hero_id: UUID,
     partial_update: HeroPatch,
     service: HeroService = Depends(get_hero_service),
 ):
