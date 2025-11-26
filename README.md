@@ -4,9 +4,12 @@ Template de FastAPI con arquitectura limpia, gestión de filtros y ordenación d
 
 ## 📚 Documentación
 
-La documentación completa del proyecto está disponible en:
+```bash
+make serve-docs
+```
 
-**🌐 [https://sempereluismi.github.io/fastapi-template/](https://sempereluismi.github.io/fastapi-template/)**
+La documentación estará disponible en `http://127.0.0.1:4321`
+
 
 ### Contenido de la documentación
 
@@ -15,10 +18,3 @@ La documentación completa del proyecto está disponible en:
 - **Guía de Uso**: Cómo utilizar las funcionalidades del proyecto
 - **Ejemplos**: Casos de uso prácticos y ejemplos de código
 
-### Visualizar la documentación localmente
-
-```bash
-make serve-docs
-```
-
-La documentación estará disponible en `http://127.0.0.1:4321`
