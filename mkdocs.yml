@@ -1,6 +1,6 @@
 site_name: FastAPI Template
-site_description: Template de FastAPI con arquitectura limpia
-site_author: Luis Sempere
+site_description: Template de FastAPI
+site_author: sempereluismi
 site_url: https://github.com/sempereluismi/fastapi-template
 
 theme:
