@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import Mock
-from app.repositories.hero_repository import HeroRepository
+from app.repositories.user_repository import HeroRepository
 from app.services.hero_service import HeroService
 
 

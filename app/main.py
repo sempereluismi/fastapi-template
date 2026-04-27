@@ -3,7 +3,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.db.database import db
-from app.routes.test import test_router
+from app.routes.user import user_router
 from app.exceptions.base import AppException
 from app.utils.response import ResponseBuilder
 from app.core.config import get_settings
@@ -92,7 +92,8 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
-app.include_router(test_router)
+# app.include_router(test_router)
+app.include_router(user_router)
 
 
 @app.get("/")

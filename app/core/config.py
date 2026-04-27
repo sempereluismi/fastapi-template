@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
 
     database_url: str = Field(
-        default="postgresql://fastapi_user:fastapi_password@localhost:5432/fastapi_db",
+        default="sqlite:///test.db",
         alias="DATABASE_URL",
     )
 
